@@ -112,7 +112,8 @@ export default function Store({ route, navigation }: any) {
                         <View style={styles.productCard}>
                             <View style={styles.productInfo}>
                                 <Text style={styles.productName}>X-Burger</Text>
-                                <Text style={styles.productDescription}>Pão, hambúrguer, queijo, alface, tomate</Text>
+                                <Text style={styles.productDescription}>Pão, hambúrguer, queijo, alface, tomate </Text>
+                                <Text style={styles.productPrice}>R$ 25,90</Text>
                                 <Text style={styles.productPrice}>R$ 25,90</Text>
                             </View>
                             <TouchableOpacity style={styles.addButton}>
