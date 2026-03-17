@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import React, { useState } from 'react';
 import {
   View,
@@ -6,46 +7,77 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
-  StyleSheet
+  StyleSheet,
+  Alert
 } from 'react-native';
 
-const Login = () => {
+const Login = ({ navigation }: any) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLoginComConta = () => {
+    // Validação básica
+    if (!email || !password) {
+      Alert.alert('Erro', 'Preencha todos os campos');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      Alert.alert('Erro', 'Email inválido');
+      return;
+    }
+
+    // Se tudo estiver ok, navega para Home
+    navigation.navigate('Home'); // OBS: estudar mais sobre o navigate e navigation
+  };
+
+  const handleLoginSemConta = () => {
+    // Login sem conta - vai direto para Home
+    navigation.navigate('Home');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-
-
       <View style={styles.espaceLogo}>
         <Image
           source={require('../assets/Logo.png')}
           style={styles.logo}
         />
+
         <TextInput
           style={styles.input}
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
+
         <TextInput
           style={styles.input}
           placeholder="Senha"
           value={password}
           onChangeText={setPassword}
+          secureTextEntry
         />
-        <TouchableOpacity style={styles.button}>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLoginComConta}
+        >
           <Text style={styles.textButton}>Entrar</Text>
         </TouchableOpacity>
 
-        <View>
-          <Text>Deseja entrar sem conta?</Text>
-        </View>
+        <Text style={styles.testText}>Não possui conta ainda?</Text>
+
+        <TouchableOpacity
+          style={styles.buttonNoLogin}
+          onPress={handleLoginSemConta}
+        >
+          <Text style={styles.textButton}>Entrar sem conta</Text>
+        </TouchableOpacity>
       </View>
-
-
-
     </SafeAreaView>
   );
 };
@@ -59,7 +91,7 @@ const styles = StyleSheet.create({
   },
   //
   espaceLogo: {
-    marginTop: '60%'
+    marginTop: 100
   },
 
   // Logo
@@ -94,9 +126,27 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold'
-  }
+  },
 
   // Entrar sem login
+
+
+  testText: {
+    marginTop: 100,
+    fontSize: 16,
+    color: '#292929',
+    minHeight: 20,
+    textAlign: 'center'
+  },
+
+  buttonNoLogin: {
+    backgroundColor: '#ec691d',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 20
+  }
 });
 
 export default Login;

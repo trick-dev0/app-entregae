@@ -1,11 +1,37 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { MyButton } from "./shared/components/MyButton";
 import Login from './Login';
+import Home from './Home';
+import Store from './Store'
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  {/* Essa tag respeita o limite da camera nos celulares */}
-  return <SafeAreaView> 
-    <Login></Login>
-  </SafeAreaView>
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{ headerShown: false }} 
+        />
+
+
+        <Stack.Screen 
+          name="Store"
+          component={Store}
+        />
+
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
