@@ -1,3 +1,4 @@
+// Store.tsx (updated)
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
     View,
@@ -5,12 +6,38 @@ import {
     Image,
     StyleSheet,
     ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert 
 } from 'react-native';
+import { useLayoutEffect } from 'react';
+import { getProductsByStoreId } from '../src/data/Products';
+import { useCart } from './context/CartContext';
+
 
 export default function Store({ route, navigation }: any) {
     // Recebe os dados da loja específica
     const { store } = route.params;
+    const storeProducts = getProductsByStoreId(store.id);
+    const { addToCart, cartItems, getTotalItems } = useCart();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: false
+        });
+    }, [navigation]);
+
+    const handleAddToCart = (product: any) => {
+        addToCart(product, store.id, store.name);
+        Alert.alert('Sucesso', `${product.name} adicionado ao carrinho!`);
+    };
+
+    const handleCheckout = () => {
+        if (getTotalItems() === 0) {
+            Alert.alert('Carrinho vazio', 'Adicione itens ao carrinho antes de finalizar o pedido.');
+            return;
+        }
+        navigation.navigate('Payment');
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -21,13 +48,13 @@ export default function Store({ route, navigation }: any) {
                         source={store.image}
                         style={styles.headerImage}
                     />
-                    
+
                     {/* Botão voltar */}
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
-                        <Text style={styles.backButtonText}>← Voltar</Text>
+                        <Text style={styles.backButtonText}> voltar </Text>
                     </TouchableOpacity>
 
                     {/* Informações sobrepostas na imagem */}
@@ -42,23 +69,11 @@ export default function Store({ route, navigation }: any) {
 
                 {/* Conteúdo da loja */}
                 <View style={styles.contentContainer}>
-                    {/* Card da loja */}
-                    <View style={[styles.storeCard, { backgroundColor: store.color }]}>
-                        <Image
-                            source={store.image}
-                            style={styles.storeLogo}
-                        />
-                        <View style={styles.storeInfo}>
-                            <Text style={styles.storeName}>{store.name}</Text>
-                            <Text style={styles.storeId}>ID: #{store.id}</Text>
-                            <Text style={styles.storeStatus}>● Aberto agora</Text>
-                        </View>
-                    </View>
 
                     {/* Informações detalhadas */}
                     <View style={styles.infoSection}>
                         <Text style={styles.sectionTitle}>Informações da Loja</Text>
-                        
+
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>📍 Endereço:</Text>
                             <Text style={styles.infoValue}>Rua Principal, 123</Text>
@@ -75,7 +90,7 @@ export default function Store({ route, navigation }: any) {
                         </View>
 
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>💰 Taxa entrega:</Text>
+                            <Text style={styles.infoLabel}>💰 Taxa de entrega:</Text>
                             <Text style={styles.infoValue}>R$ 5,00</Text>
                         </View>
 
@@ -85,70 +100,42 @@ export default function Store({ route, navigation }: any) {
                         </View>
                     </View>
 
-                    {/* Categorias */}
-                    <View style={styles.categoriesSection}>
-                        <Text style={styles.sectionTitle}>Categorias</Text>
-                        <View style={styles.categoriesContainer}>
-                            <View style={styles.categoryTag}>
-                                <Text style={styles.categoryText}>Hambúrgueres</Text>
+                    {/* Renderizar categorias e produtos dinamicamente */}
+                    {storeProducts?.categories.map((category) => (
+                        <View key={category.id} style={styles.categoriesSection}>
+                            <Text style={styles.sectionTitle}>{category.name}</Text>
+                            <View style={styles.categoriesContainer}>
+                                {/* Mostrar tags de categorias */}
                             </View>
-                            <View style={styles.categoryTag}>
-                                <Text style={styles.categoryText}>Porções</Text>
-                            </View>
-                            <View style={styles.categoryTag}>
-                                <Text style={styles.categoryText}>Bebidas</Text>
-                            </View>
-                            <View style={styles.categoryTag}>
-                                <Text style={styles.categoryText}>Sobremesas</Text>
-                            </View>
-                        </View>
-                    </View>
 
-                    {/* Cardápio */}
-                    <View style={styles.menuSection}>
-                        <Text style={styles.sectionTitle}>Cardápio</Text>
-                        
-                        {/* Produto 1 */}
-                        <View style={styles.productCard}>
-                            <View style={styles.productInfo}>
-                                <Text style={styles.productName}>X-Burger</Text>
-                                <Text style={styles.productDescription}>Pão, hambúrguer, queijo, alface, tomate </Text>
-                                <Text style={styles.productPrice}>R$ 25,90</Text>
-                                <Text style={styles.productPrice}>R$ 25,90</Text>
-                            </View>
-                            <TouchableOpacity style={styles.addButton}>
-                                <Text style={styles.addButtonText}>+</Text>
-                            </TouchableOpacity>
+                            {/* Produtos da categoria */}
+                            {category.products.map((product) => (
+                                <View key={product.id} style={styles.productCard}>
+                                    <View style={styles.productInfo}>
+                                        <Text style={styles.productName}>{product.name}</Text>
+                                        <Text style={styles.productDescription}>
+                                            {product.description}
+                                        </Text>
+                                        <Text style={styles.productPrice}>
+                                            R$ {product.price.toFixed(2)}
+                                        </Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        style={styles.addButton}
+                                        onPress={() => handleAddToCart(product)}
+                                    >
+                                        <Text style={styles.addButtonText}>+</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
                         </View>
-
-                        {/* Produto 2 */}
-                        <View style={styles.productCard}>
-                            <View style={styles.productInfo}>
-                                <Text style={styles.productName}>X-Salada</Text>
-                                <Text style={styles.productDescription}>Pão, hambúrguer, queijo, alface, tomate, milho</Text>
-                                <Text style={styles.productPrice}>R$ 28,90</Text>
-                            </View>
-                            <TouchableOpacity style={styles.addButton}>
-                                <Text style={styles.addButtonText}>+</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Produto 3 */}
-                        <View style={styles.productCard}>
-                            <View style={styles.productInfo}>
-                                <Text style={styles.productName}>Batata Frita</Text>
-                                <Text style={styles.productDescription}>Porção de batata frita crocante</Text>
-                                <Text style={styles.productPrice}>R$ 15,90</Text>
-                            </View>
-                            <TouchableOpacity style={styles.addButton}>
-                                <Text style={styles.addButtonText}>+</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    ))}
 
                     {/* Botão de ação */}
-                    <TouchableOpacity style={styles.actionButton}>
-                        <Text style={styles.actionButtonText}>Fazer pedido</Text>
+                    <TouchableOpacity style={styles.actionButton} onPress={handleCheckout}>
+                        <Text style={styles.actionButtonText}>
+                            Fazer pedido {getTotalItems() > 0 ? `(${getTotalItems()} itens)` : ''}
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -156,6 +143,7 @@ export default function Store({ route, navigation }: any) {
     );
 }
 
+// Styles remain the same as in your original file
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -192,7 +180,7 @@ const styles = StyleSheet.create({
         right: 20,
         backgroundColor: 'rgba(0,0,0,0.7)',
         padding: 15,
-        borderRadius: 10
+        borderRadius: 10,
     },
     storeNameOverlay: {
         fontSize: 24,
@@ -258,7 +246,10 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
     infoSection: {
-        marginBottom: 20
+        marginBottom: 20,
+        backgroundColor: "#e2e0e0",
+        borderRadius: 10,
+        padding: 10
     },
     sectionTitle: {
         fontSize: 20,
@@ -337,13 +328,14 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 15
+        marginLeft: 15,
     },
     addButtonText: {
         color: '#fff',
         fontSize: 24,
         fontWeight: 'bold',
-        lineHeight: 28
+        lineHeight: 28,
+        marginTop: -2,
     },
     actionButton: {
         backgroundColor: '#4CAF50',

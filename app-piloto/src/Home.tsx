@@ -9,12 +9,7 @@ import {
 } from 'react-native';
 
 export default function Home({ navigation }: any) {
-
-    const enterStore = () => {
-        // Login sem conta - vai direto para Home
-        navigation.navigate('Store', stores);
-    };
-
+    
     return (
 
         <SafeAreaView style={styles.container}>
@@ -22,6 +17,7 @@ export default function Home({ navigation }: any) {
             <Image source={require('../assets/bannerHome.png')}
                 style={styles.banner}
             />
+            
 
             <View style={styles.containerCards}>
                 {stores.map((store) => (
