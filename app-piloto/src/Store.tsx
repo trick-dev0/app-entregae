@@ -1,4 +1,4 @@
-// Store.tsx (updated)
+// Store.tsx (adicionar botão de voltar personalizado)
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
     View,
@@ -9,22 +9,13 @@ import {
     TouchableOpacity,
     Alert 
 } from 'react-native';
-import { useLayoutEffect } from 'react';
 import { getProductsByStoreId } from '../src/data/Products';
 import { useCart } from './context/CartContext';
 
-
 export default function Store({ route, navigation }: any) {
-    // Recebe os dados da loja específica
     const { store } = route.params;
     const storeProducts = getProductsByStoreId(store.id);
     const { addToCart, cartItems, getTotalItems } = useCart();
-
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerShown: false
-        });
-    }, [navigation]);
 
     const handleAddToCart = (product: any) => {
         addToCart(product, store.id, store.name);
@@ -49,12 +40,12 @@ export default function Store({ route, navigation }: any) {
                         style={styles.headerImage}
                     />
 
-                    {/* Botão voltar */}
+                    {/* Botão voltar personalizado */}
                     <TouchableOpacity
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
-                        <Text style={styles.backButtonText}> voltar </Text>
+                        <Text style={styles.backButtonText}>← Voltar</Text>
                     </TouchableOpacity>
 
                     {/* Informações sobrepostas na imagem */}
@@ -67,48 +58,35 @@ export default function Store({ route, navigation }: any) {
                     </View>
                 </View>
 
-                {/* Conteúdo da loja */}
+                {/* Resto do conteúdo permanece igual */}
                 <View style={styles.contentContainer}>
-
-                    {/* Informações detalhadas */}
                     <View style={styles.infoSection}>
                         <Text style={styles.sectionTitle}>Informações da Loja</Text>
-
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>📍 Endereço:</Text>
                             <Text style={styles.infoValue}>Rua Principal, 123</Text>
                         </View>
-
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>🕐 Horário:</Text>
                             <Text style={styles.infoValue}>18:00 - 23:30</Text>
                         </View>
-
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>📞 Telefone:</Text>
                             <Text style={styles.infoValue}>(11) 99999-9999</Text>
                         </View>
-
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>💰 Taxa de entrega:</Text>
                             <Text style={styles.infoValue}>R$ 5,00</Text>
                         </View>
-
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>🛵 Tempo entrega:</Text>
                             <Text style={styles.infoValue}>30-45 min</Text>
                         </View>
                     </View>
 
-                    {/* Renderizar categorias e produtos dinamicamente */}
                     {storeProducts?.categories.map((category) => (
                         <View key={category.id} style={styles.categoriesSection}>
                             <Text style={styles.sectionTitle}>{category.name}</Text>
-                            <View style={styles.categoriesContainer}>
-                                {/* Mostrar tags de categorias */}
-                            </View>
-
-                            {/* Produtos da categoria */}
                             {category.products.map((product) => (
                                 <View key={product.id} style={styles.productCard}>
                                     <View style={styles.productInfo}>
@@ -131,7 +109,6 @@ export default function Store({ route, navigation }: any) {
                         </View>
                     ))}
 
-                    {/* Botão de ação */}
                     <TouchableOpacity style={styles.actionButton} onPress={handleCheckout}>
                         <Text style={styles.actionButtonText}>
                             Fazer pedido {getTotalItems() > 0 ? `(${getTotalItems()} itens)` : ''}
@@ -143,7 +120,7 @@ export default function Store({ route, navigation }: any) {
     );
 }
 
-// Styles remain the same as in your original file
+// Styles permanecem os mesmos
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -205,46 +182,6 @@ const styles = StyleSheet.create({
     contentContainer: {
         padding: 20
     },
-    storeCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    storeLogo: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        marginRight: 15
-    },
-    storeInfo: {
-        flex: 1
-    },
-    storeName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 4
-    },
-    storeId: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 4
-    },
-    storeStatus: {
-        fontSize: 14,
-        color: '#4CAF50',
-        fontWeight: '600'
-    },
     infoSection: {
         marginBottom: 20,
         backgroundColor: "#e2e0e0",
@@ -272,25 +209,6 @@ const styles = StyleSheet.create({
         flex: 1
     },
     categoriesSection: {
-        marginBottom: 20
-    },
-    categoriesContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap'
-    },
-    categoryTag: {
-        backgroundColor: '#F0F0F0',
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginRight: 8,
-        marginBottom: 8
-    },
-    categoryText: {
-        color: '#666',
-        fontSize: 14
-    },
-    menuSection: {
         marginBottom: 20
     },
     productCard: {

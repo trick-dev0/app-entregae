@@ -56,7 +56,8 @@ export default function Payment({ navigation, route }: any) {
     clearCart();
     
     // Navegar para a tela de confirmação
-    navigation.replace('OrderConfirmation', { orderDetails });
+navigation.replace('OrderConfirmation', { orderDetails });
+
   };
 
   // Função para formatar o número do cartão com espaços
@@ -398,4 +399,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  grandTotalRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginTop: 8,
+  paddingTop: 8,
+  borderTopWidth: 1,
+  borderTopColor: '#e0e0e0',
+},
 });

@@ -1,4 +1,4 @@
-// OrderConfirmation.tsx
+// OrderConfirmation.tsx (corrigido)
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
@@ -6,18 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image,
   Alert
 } from 'react-native';
-import { useEffect } from 'react';
 
 export default function OrderConfirmation({ navigation, route }: any) {
   const { orderDetails } = route.params;
-
-  useEffect(() => {
-    // Opcional: Limpar o carrinho quando a tela é carregada
-    // O carrinho já deve ter sido limpo no Payment
-  }, []);
 
   const formatDate = () => {
     const now = new Date();
@@ -41,6 +34,17 @@ export default function OrderConfirmation({ navigation, route }: any) {
       default:
         return method;
     }
+  };
+
+  const handleGoToHome = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Main' }],
+    });
+  };
+
+  const handleTrackOrder = () => {
+    Alert.alert('Rastreamento', 'Em breve você poderá rastrear seu pedido!');
   };
 
   return (
@@ -106,7 +110,7 @@ export default function OrderConfirmation({ navigation, route }: any) {
             <Text style={styles.totalValue}>R$ {orderDetails.deliveryFee.toFixed(2)}</Text>
           </View>
 
-          <View style={styles.totalRow}>
+          <View style={styles.grandTotalRow}>
             <Text style={styles.grandTotalLabel}>Total</Text>
             <Text style={styles.grandTotalValue}>R$ {orderDetails.total.toFixed(2)}</Text>
           </View>
@@ -134,23 +138,14 @@ export default function OrderConfirmation({ navigation, route }: any) {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.trackButton}
-            onPress={() => {
-              // Aqui você pode implementar o rastreamento do pedido
-              Alert.alert('Rastreamento', 'Em breve você poderá rastrear seu pedido!');
-            }}
+            onPress={handleTrackOrder}
           >
             <Text style={styles.trackButtonText}>Acompanhar Pedido</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.homeButton}
-            onPress={() => {
-              // Navegar para Home e limpar o histórico
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-              });
-            }}
+            onPress={handleGoToHome}
           >
             <Text style={styles.homeButtonText}>Voltar para o Início</Text>
           </TouchableOpacity>
@@ -291,17 +286,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
+  grandTotalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
   grandTotalLabel: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginTop: 8,
   },
   grandTotalValue: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#E53935',
-    marginTop: 8,
   },
   buttonContainer: {
     padding: 15,

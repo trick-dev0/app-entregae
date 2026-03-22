@@ -1,3 +1,4 @@
+// Login.tsx (corrigido)
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import React, { useState } from 'react';
@@ -28,13 +29,13 @@ const Login = ({ navigation }: any) => {
       return;
     }
 
-    // Se tudo estiver ok, navega para Home
-    navigation.navigate('Home'); // OBS: estudar mais sobre o navigate e navigation
+    // Se tudo estiver ok, navega para Main (que contém as tabs)
+    navigation.replace('Main'); // Usar replace para não permitir voltar para o login
   };
 
   const handleLoginSemConta = () => {
-    // Login sem conta - vai direto para Home
-    navigation.navigate('Home');
+    // Login sem conta - vai direto para Main
+    navigation.replace('Main'); // Usar replace para não permitir voltar para o login
   };
 
   return (

@@ -9,36 +9,28 @@ import {
 } from 'react-native';
 
 export default function Home({ navigation }: any) {
-    
     return (
-
         <SafeAreaView style={styles.container}>
-
             <Image source={require('../assets/bannerHome.png')}
                 style={styles.banner}
             />
             
-
             <View style={styles.containerCards}>
                 {stores.map((store) => (
                     <TouchableOpacity
                         key={store.id}
                         style={[styles.card, { backgroundColor: store.color }]}
                         onPress={() => navigation.navigate('Store', { store })}>
-
                         <Image
                             source={store.image}
                             style={styles.image}
                         />
-
                         <Text style={styles.name}>
                             {store.name}
                         </Text>
-
                     </TouchableOpacity>
                 ))}
             </View>
-
         </SafeAreaView>
     );
 }

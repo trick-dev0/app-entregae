@@ -21,12 +21,13 @@ export default function Cart({ navigation }: any) {
         getTotalItems,
     } = useCart();
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: 'Meu Carrinho',
-            headerShown: true,
-        });
-    }, [navigation]);
+useLayoutEffect(() => {
+  navigation.setOptions({
+    title: 'Meu Carrinho',
+    headerShown: true,
+    headerLeft: () => null, // Remove o botão de voltar
+  });
+}, [navigation]);
 
     const handleCheckout = () => {
         if (cartItems.length === 0) {
@@ -38,19 +39,19 @@ export default function Cart({ navigation }: any) {
         navigation.navigate('Payment');
     };
 
-    if (cartItems.length === 0) {
-        return (
-            <SafeAreaView style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>🛒 Seu carrinho está vazio</Text>
-                <TouchableOpacity
-                    style={styles.shopButton}
-                    onPress={() => navigation.navigate('Home')}
-                >
-                    <Text style={styles.shopButtonText}>Continuar Comprando</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-        );
-    }
+if (cartItems.length === 0) {
+    return (
+        <SafeAreaView style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>🛒 Seu carrinho está vazio</Text>
+            <TouchableOpacity
+                style={styles.shopButton}
+                onPress={() => navigation.navigate('Main')} // ← ALTERADO PARA 'Main'
+            >
+                <Text style={styles.shopButtonText}>Continuar Comprando</Text>
+            </TouchableOpacity>
+        </SafeAreaView>
+    );
+}
 
     return (
         <SafeAreaView style={styles.container}>
