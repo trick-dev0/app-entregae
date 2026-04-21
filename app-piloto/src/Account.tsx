@@ -61,22 +61,6 @@ export default function Account({ navigation }: any) {
 
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>❤️</Text>
-              <Text style={styles.menuText}>Favoritos</Text>
-            </View>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>📍</Text>
-              <Text style={styles.menuText}>Endereços</Text>
-            </View>
-            <Text style={styles.menuArrow}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <View style={styles.menuItemLeft}>
               <Text style={styles.menuIcon}>💳</Text>
               <Text style={styles.menuText}>Formas de Pagamento</Text>
             </View>
@@ -100,18 +84,7 @@ export default function Account({ navigation }: any) {
             />
           </View>
 
-          <View style={styles.menuItem}>
-            <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>🌙</Text>
-              <Text style={styles.menuText}>Modo Escuro</Text>
-            </View>
-            <Switch
-              value={darkMode}
-              onValueChange={setDarkMode}
-              trackColor={{ false: '#767577', true: '#E53935' }}
-              thumbColor={darkMode ? '#fff' : '#f4f3f4'}
-            />
-          </View>
+
         </View>
 
         <View style={styles.menuSection}>

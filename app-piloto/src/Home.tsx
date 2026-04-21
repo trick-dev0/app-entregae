@@ -11,7 +11,7 @@ import {
 export default function Home({ navigation }: any) {
     return (
         <SafeAreaView style={styles.container}>
-            <Image source={require('../assets/bannerHome.png')}
+            <Image source={require('../assets/Banners/bannerFood.jpg')}
                 style={styles.banner}
             />
             

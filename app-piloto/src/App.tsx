@@ -58,7 +58,7 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarIcon: ({ focused, color}) => {
           let iconComponent;
           let label = '';
           
@@ -75,11 +75,29 @@ function MainTabs() {
             );
             label = 'Início';
           } else if (route.name === 'CartTab') {
-            iconComponent = <Text style={{ fontSize: 24, color: color }}>🛒</Text>;
+            iconComponent = (
+              <Image 
+                source={require('../assets/icons/cart.png')}
+                style={{ 
+                  width: 24, 
+                  height: 24, 
+                  tintColor: color,
+                }}
+              />
+            );
             label = 'Carrinho';
           } else if (route.name === 'AccountTab') {
-            iconComponent = <Text style={{ fontSize: 24, color: color }}>👤</Text>;
-            label = 'Minha Conta';
+            iconComponent = (
+              <Image 
+                source={require('../assets/icons/usuario.png')}
+                style={{ 
+                  width: 24, 
+                  height: 24, 
+                  tintColor: color,
+                }}
+              />
+            );
+            label = 'Conta';
           }
           
           return (
@@ -87,6 +105,7 @@ function MainTabs() {
               position: 'relative', 
               alignItems: 'center',
               justifyContent: 'center',
+              marginTop: 15
             }}>
               {iconComponent}
               <Text style={{ 

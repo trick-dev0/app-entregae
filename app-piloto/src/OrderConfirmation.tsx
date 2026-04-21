@@ -136,12 +136,7 @@ export default function OrderConfirmation({ navigation, route }: any) {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.trackButton}
-            onPress={handleTrackOrder}
-          >
-            <Text style={styles.trackButtonText}>Acompanhar Pedido</Text>
-          </TouchableOpacity>
+
 
           <TouchableOpacity
             style={styles.homeButton}

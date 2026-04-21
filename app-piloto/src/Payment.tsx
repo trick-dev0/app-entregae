@@ -1,4 +1,4 @@
-// Payment.tsx (updated)
+// Payment.tsx (corrigido)
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
@@ -6,405 +6,197 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  TextInput,
-  Alert,
+  Alert
 } from 'react-native';
-import { useCart } from './context/CartContext';
 import { useState } from 'react';
+import { useCart } from './context/CartContext';
 
-export default function Payment({ navigation, route }: any) {
-  const { cartItems, getTotalPrice, clearCart } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState<string>('credit');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+export default function Payment({ navigation }: any) {
+  const { cartItems, getTotalPrice, clearCart } = useCart(); // Adicionado clearCart
+  const [selectedPayment, setSelectedPayment] = useState('');
 
-  const total = getTotalPrice();
   const deliveryFee = 5.00;
-  const finalTotal = total + deliveryFee;
+  const subtotal = getTotalPrice();
+  const total = subtotal + deliveryFee;
+
+  const paymentMethods = [
+    { id: 'credit', name: '💳 Cartão de Crédito' },
+    { id: 'debit', name: '💳 Cartão de Débito' },
+    { id: 'pix', name: '💠 Pix' },
+    { id: 'cash', name: '💵 Dinheiro' },
+  ];
 
   const handleConfirmPayment = () => {
-    if (paymentMethod === 'credit' || paymentMethod === 'debit') {
-      if (!cardNumber || !cardName || !expiryDate || !cvv) {
-        Alert.alert('Erro', 'Preencha todos os dados do cartão');
-        return;
-      }
-      
-      if (cardNumber.replace(/\s/g, '').length < 16) {
-        Alert.alert('Erro', 'Número do cartão inválido');
-        return;
-      }
-      
-      if (cvv.length < 3) {
-        Alert.alert('Erro', 'CVV inválido');
-        return;
-      }
+    if (!selectedPayment) {
+      Alert.alert('Erro', 'Selecione uma forma de pagamento');
+      return;
     }
 
-    // Preparar os detalhes do pedido para a tela de confirmação
     const orderDetails = {
       items: cartItems,
-      subtotal: total,
+      paymentMethod: selectedPayment,
+      subtotal: subtotal,
       deliveryFee: deliveryFee,
-      total: finalTotal,
-      paymentMethod: paymentMethod,
+      total: total,
       orderDate: new Date().toISOString(),
     };
 
-    // Limpar o carrinho
+    // Limpar o carrinho antes de navegar
     clearCart();
-    
-    // Navegar para a tela de confirmação
-navigation.replace('OrderConfirmation', { orderDetails });
 
-  };
-
-  // Função para formatar o número do cartão com espaços
-  const formatCardNumber = (text: string) => {
-    const cleaned = text.replace(/\s/g, '');
-    const chunks = cleaned.match(/.{1,4}/g);
-    if (chunks) {
-      return chunks.join(' ');
-    }
-    return text;
-  };
-
-  // Função para formatar a data de validade
-  const formatExpiryDate = (text: string) => {
-    const cleaned = text.replace(/\D/g, '');
-    if (cleaned.length >= 2) {
-      return cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4);
-    }
-    return text;
+    // Navegar para a confirmação
+    navigation.replace('OrderConfirmation', { orderDetails });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView>
         <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backText}>← Voltar</Text>
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>Pagamento</Text>
-          <Text style={styles.headerSubtitle}>Revise seu pedido e escolha a forma de pagamento</Text>
         </View>
 
-        {/* Resumo do pedido */}
         <View style={styles.summaryCard}>
           <Text style={styles.sectionTitle}>Resumo do Pedido</Text>
-          
-          {cartItems.map((item) => (
-            <View key={item.product.id} style={styles.orderItem}>
-              <View style={styles.orderItemInfo}>
-                <Text style={styles.orderItemName}>
-                  {item.product.name} x {item.quantity}
-                </Text>
-                <Text style={styles.orderItemStore}>{item.storeName}</Text>
-              </View>
-              <Text style={styles.orderItemPrice}>
-                R$ {(item.product.price * item.quantity).toFixed(2)}
-              </Text>
-            </View>
-          ))}
-
-          <View style={styles.divider} />
-
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal</Text>
-            <Text style={styles.totalValue}>R$ {total.toFixed(2)}</Text>
+          <View style={styles.summaryRow}>
+            <Text>Subtotal</Text>
+            <Text>R$ {subtotal.toFixed(2)}</Text>
           </View>
-
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Taxa de entrega</Text>
-            <Text style={styles.totalValue}>R$ {deliveryFee.toFixed(2)}</Text>
+          <View style={styles.summaryRow}>
+            <Text>Taxa de Entrega</Text>
+            <Text>R$ {deliveryFee.toFixed(2)}</Text>
           </View>
-
-          <View style={styles.totalRow}>
-            <Text style={styles.grandTotalLabel}>Total</Text>
-            <Text style={styles.grandTotalValue}>R$ {finalTotal.toFixed(2)}</Text>
+          <View style={[styles.summaryRow, styles.totalRow]}>
+            <Text style={styles.totalText}>Total</Text>
+            <Text style={styles.totalPrice}>R$ {total.toFixed(2)}</Text>
           </View>
         </View>
 
-        {/* Formas de pagamento */}
         <View style={styles.paymentCard}>
           <Text style={styles.sectionTitle}>Forma de Pagamento</Text>
-
-          <TouchableOpacity
-            style={[
-              styles.paymentOption,
-              paymentMethod === 'credit' && styles.paymentOptionSelected,
-            ]}
-            onPress={() => setPaymentMethod('credit')}
-          >
-            <Text style={styles.paymentOptionText}>💳 Cartão de Crédito</Text>
-            {paymentMethod === 'credit' && <Text style={styles.checkmark}>✓</Text>}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.paymentOption,
-              paymentMethod === 'debit' && styles.paymentOptionSelected,
-            ]}
-            onPress={() => setPaymentMethod('debit')}
-          >
-            <Text style={styles.paymentOptionText}>💳 Cartão de Débito</Text>
-            {paymentMethod === 'debit' && <Text style={styles.checkmark}>✓</Text>}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.paymentOption,
-              paymentMethod === 'cash' && styles.paymentOptionSelected,
-            ]}
-            onPress={() => setPaymentMethod('cash')}
-          >
-            <Text style={styles.paymentOptionText}>💰 Dinheiro</Text>
-            {paymentMethod === 'cash' && <Text style={styles.checkmark}>✓</Text>}
-          </TouchableOpacity>
-
-          {/* Cartão de crédito/débito fields */}
-          {(paymentMethod === 'credit' || paymentMethod === 'debit') && (
-            <View style={styles.cardFields}>
-              <TextInput
-                style={styles.input}
-                placeholder="Número do cartão"
-                value={cardNumber}
-                onChangeText={(text) => setCardNumber(formatCardNumber(text))}
-                keyboardType="numeric"
-                maxLength={19}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Nome no cartão"
-                value={cardName}
-                onChangeText={setCardName}
-              />
-              <View style={styles.rowInputs}>
-                <TextInput
-                  style={[styles.input, styles.halfInput]}
-                  placeholder="Validade (MM/AA)"
-                  value={expiryDate}
-                  onChangeText={(text) => setExpiryDate(formatExpiryDate(text))}
-                  maxLength={5}
-                />
-                <TextInput
-                  style={[styles.input, styles.halfInput]}
-                  placeholder="CVV"
-                  value={cvv}
-                  onChangeText={setCvv}
-                  keyboardType="numeric"
-                  maxLength={4}
-                  secureTextEntry
-                />
-              </View>
-            </View>
-          )}
+          {paymentMethods.map(method => (
+            <TouchableOpacity
+              key={method.id}
+              style={[
+                styles.paymentOption,
+                selectedPayment === method.id && styles.paymentOptionSelected
+              ]}
+              onPress={() => setSelectedPayment(method.id)}
+            >
+              <Text style={styles.paymentText}>{method.name}</Text>
+              {selectedPayment === method.id && (
+                <Text style={styles.checkmark}>✓</Text>
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
 
-        {/* Botões */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonText}>Voltar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.confirmButton}
-            onPress={handleConfirmPayment}
-          >
-            <Text style={styles.confirmButtonText}>
-              Confirmar Pagamento - R$ {finalTotal.toFixed(2)}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.confirmButton}
+          onPress={handleConfirmPayment}
+        >
+          <Text style={styles.confirmButtonText}>Confirmar Pedido</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// Styles permanecem os mesmos...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f5f5f5'
   },
   header: {
-    backgroundColor: '#E53935',
-    padding: 20,
-    paddingTop: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#fff'
+  },
+  backButton: {
+    padding: 8
+  },
+  backText: {
+    fontSize: 16,
+    color: '#E53935'
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#fff',
-    opacity: 0.9,
+    flex: 1,
+    textAlign: 'center',
+    marginRight: 40
   },
   summaryCard: {
     backgroundColor: '#fff',
-    margin: 15,
-    marginTop: 15,
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    margin: 16,
+    padding: 16,
+    borderRadius: 12
   },
   paymentCard: {
     backgroundColor: '#fff',
-    margin: 15,
-    marginTop: 0,
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    margin: 16,
+    padding: 16,
+    borderRadius: 12
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    marginBottom: 16
   },
-  orderItem: {
+  summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  orderItemInfo: {
-    flex: 1,
-  },
-  orderItemName: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '500',
-  },
-  orderItemStore: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
-  orderItemPrice: {
-    fontSize: 14,
-    color: '#E53935',
-    fontWeight: 'bold',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    marginVertical: 12,
+    marginBottom: 12
   },
   totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#eee'
   },
-  totalLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  totalValue: {
-    fontSize: 14,
-    color: '#333',
-  },
-  grandTotalLabel: {
+  totalText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 8,
+    fontWeight: 'bold'
   },
-  grandTotalValue: {
+  totalPrice: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#E53935',
-    marginTop: 8,
+    color: '#E53935'
   },
   paymentOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 15,
+    padding: 16,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#ddd',
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 12
   },
   paymentOptionSelected: {
-    borderColor: '#E53935',
-    backgroundColor: '#fff5f5',
+    borderColor: '#4CAF50',
+    backgroundColor: '#e8f5e9'
   },
-  paymentOptionText: {
-    fontSize: 16,
-    color: '#333',
+  paymentText: {
+    fontSize: 16
   },
   checkmark: {
     fontSize: 18,
-    color: '#E53935',
-    fontWeight: 'bold',
-  },
-  cardFields: {
-    marginTop: 15,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 10,
-    backgroundColor: '#fff',
-  },
-  rowInputs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  halfInput: {
-    width: '48%',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    padding: 15,
-    gap: 10,
-    marginBottom: 20,
-  },
-  backButton: {
-    flex: 1,
-    backgroundColor: '#999',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#4CAF50',
+    fontWeight: 'bold'
   },
   confirmButton: {
-    flex: 2,
     backgroundColor: '#4CAF50',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center'
   },
   confirmButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  grandTotalRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 8,
-  paddingTop: 8,
-  borderTopWidth: 1,
-  borderTopColor: '#e0e0e0',
-},
+    fontSize: 18,
+    fontWeight: 'bold'
+  }
 });
