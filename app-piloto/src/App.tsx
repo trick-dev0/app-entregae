@@ -60,7 +60,6 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color}) => {
           let iconComponent;
-          let label = '';
           
           if (route.name === 'HomeTab') {
             iconComponent = (
@@ -73,7 +72,6 @@ function MainTabs() {
                 }}
               />
             );
-            label = 'Início';
           } else if (route.name === 'CartTab') {
             iconComponent = (
               <Image 
@@ -85,7 +83,6 @@ function MainTabs() {
                 }}
               />
             );
-            label = 'Carrinho';
           } else if (route.name === 'AccountTab') {
             iconComponent = (
               <Image 
@@ -97,7 +94,6 @@ function MainTabs() {
                 }}
               />
             );
-            label = 'Conta';
           }
           
           return (
@@ -114,7 +110,6 @@ function MainTabs() {
                 marginTop: 4,
                 fontWeight: focused ? '600' : '400',
               }}>
-                {label}
               </Text>
               {route.name === 'CartTab' && totalItems > 0 && (
                 <View style={{
